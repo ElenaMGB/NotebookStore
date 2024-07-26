@@ -39,74 +39,80 @@ public class NotebookStore {
         return filteredNotebooks;
     }
 
-    public static void main(String[] args) {
-        NotebookStore store = new NotebookStore();
+    public void populateStore() {
+        addNotebook(new Notebook("Dell", 16, 512, "Windows", "Black"));
+        addNotebook(new Notebook("HP", 8, 256, "Windows", "Silver"));
+        addNotebook(new Notebook("Apple", 8, 256, "MacOS", "Gray"));
+        addNotebook(new Notebook("Asus", 16, 1024, "Windows", "Black"));
+        addNotebook(new Notebook("Lenovo", 4, 128, "Linux", "Black"));
+    }
 
-        store.addNotebook(new Notebook("Dell", 16, 512, "Windows", "Black"));
-        store.addNotebook(new Notebook("HP", 8, 256, "Windows", "Silver"));
-        store.addNotebook(new Notebook("Apple", 8, 256, "MacOS", "Gray"));
-        store.addNotebook(new Notebook("Asus", 16, 1024, "Windows", "Black"));
-        store.addNotebook(new Notebook("Lenovo", 4, 128, "Linux", "Black"));
-
+    public Map<String, Object> getCriteriaFromUser() {
         Scanner scanner = new Scanner(System.in);
         Map<String, Object> criteria = new HashMap<>();
 
         boolean continueFiltering = true;
         while (continueFiltering) {
-            System.out.println("Введите цифру, соответствующую необходимому критерию:");
-            System.out.println("1 - ОЗУ");
-            System.out.println("2 - Объем ЖД");
-            System.out.println("3 - Операционная система");
-            System.out.println("4 - Цвет");
-            System.out.println("5 - Бренд");
-            System.out.print("Ваш выбор: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline
-
-            switch (choice) {
-                case 1:
-                    System.out.print("Введите минимальное значение ОЗУ (в ГБ): ");
-                    int ram = scanner.nextInt();
-                    criteria.put("ram", ram);
-                    break;
-                case 2:
-                    System.out.print("Введите минимальное значение объема ЖД (в ГБ): ");
-                    int hdd = scanner.nextInt();
-                    criteria.put("hdd", hdd);
-                    break;
-                case 3:
-                    System.out.print("Введите операционную систему: ");
-                    String os = scanner.nextLine();
-                    criteria.put("os", os);
-                    break;
-                case 4:
-                    System.out.print("Введите цвет: ");
-                    String color = scanner.nextLine();
-                    criteria.put("color", color);
-                    break;
-                case 5:
-                    System.out.print("Введите бренд: ");
-                    String brand = scanner.nextLine();
-                    criteria.put("brand", brand);
-                    break;
-                default:
-                    System.out.println("Неверный выбор.");
-                    break;
-            }
-
-            System.out.print("Хотите добавить еще критерий? (да/нет): ");
-            String moreCriteria = scanner.nextLine();
-            if (!moreCriteria.equalsIgnoreCase("да")) {
-                continueFiltering = false;
-            }
+            int choice = getUserChoice(scanner);
+            getCriteriaInput(scanner, criteria, choice);
+            continueFiltering = askForMoreCriteria(scanner);
         }
+        return criteria;
+    }
 
+    private int getUserChoice(Scanner scanner) {
+        System.out.println("Введите цифру, соответствующую необходимому критерию:");
+        System.out.println("1 - ОЗУ");
+        System.out.println("2 - Объем ЖД");
+        System.out.println("3 - Операционная система");
+        System.out.println("4 - Цвет");
+        System.out.println("5 - Бренд");
+        System.out.print("Ваш выбор: ");
+        return scanner.nextInt();
+    }
+
+    private void getCriteriaInput(Scanner scanner, Map<String, Object> criteria, int choice) {
+        scanner.nextLine(); // consume newline
+        switch (choice) {
+            case 1:
+                System.out.print("Введите минимальное значение ОЗУ (в ГБ): ");
+                criteria.put("ram", scanner.nextInt());
+                break;
+            case 2:
+                System.out.print("Введите минимальное значение объема ЖД (в ГБ): ");
+                criteria.put("hdd", scanner.nextInt());
+                break;
+            case 3:
+                System.out.print("Введите операционную систему: ");
+                criteria.put("os", scanner.nextLine());
+                break;
+            case 4:
+                System.out.print("Введите цвет: ");
+                criteria.put("color", scanner.nextLine());
+                break;
+            case 5:
+                System.out.print("Введите бренд: ");
+                criteria.put("brand", scanner.nextLine());
+                break;
+            default:
+                System.out.println("Неверный выбор.");
+                break;
+        }
+    }
+
+    private boolean askForMoreCriteria(Scanner scanner) {
+        System.out.print("Хотите добавить еще критерий? (yes/no): ");
+        String moreCriteria = scanner.nextLine();
+        return moreCriteria.equalsIgnoreCase("yes");
+    }
+
+    public void displayFilteredNotebooks(Map<String, Object> criteria) {
         System.out.println("Критерии фильтрации:");
         for (Map.Entry<String, Object> entry : criteria.entrySet()) {
             System.out.println(entry.getKey() + ": " + entry.getValue());
         }
 
-        Set<Notebook> filteredNotebooks = store.filterNotebooks(criteria);
+        Set<Notebook> filteredNotebooks = filterNotebooks(criteria);
         System.out.println("Отфильтрованные ноутбуки:");
         for (Notebook notebook : filteredNotebooks) {
             System.out.println(notebook);

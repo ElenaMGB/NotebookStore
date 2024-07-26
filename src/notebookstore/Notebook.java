@@ -2,10 +2,10 @@ package notebookstore;
 
 public class Notebook {
     private String brand;
-    private int ram; // ОЗУ в ГБ
-    private int hdd; // Объем ЖД в ГБ
-    private String os; // Операционная система
-    private String color; // Цвет
+    private int ram;
+    private int hdd;
+    private String os;
+    private String color;
 
     public Notebook(String brand, int ram, int hdd, String os, String color) {
         this.brand = brand;
